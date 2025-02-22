@@ -58,20 +58,24 @@
                     const reviewsContainer = document.getElementById('reviews');
                     reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
 
-                    for (const key in data) {
-                        const review = data[key];
-                        const reviewElement = document.createElement('div');
-                        reviewElement.classList.add('review');
+                    if (data) {
+                        for (const key in data) {
+                            const review = data[key];
+                            const reviewElement = document.createElement('div');
+                            reviewElement.classList.add('review');
 
-                        // Créer la notation par étoiles
-                        const stars = Array.from({ length: 5 }, (_, i) => {
-                            return `<span class="star ${i < review.rating ? 'filled' : ''}">&#9733;</span>`;
-                        }).join('');
+                            // Créer la notation par étoiles
+                            const stars = Array.from({ length: 5 }, (_, i) => {
+                                return `<span class="star ${i < review.rating ? 'filled' : ''}">&#9733;</span>`;
+                            }).join('');
 
-                        reviewElement.innerHTML = `
-                            <strong>${review.name}</strong> (${stars}): <p>${review.message}</p>
-                        `;
-                        reviewsContainer.appendChild(reviewElement);
+                            reviewElement.innerHTML = `
+                                <strong>${review.name}</strong> (${stars}): <p>${review.message}</p>
+                            `;
+                            reviewsContainer.appendChild(reviewElement);
+                        }
+                    } else {
+                        reviewsContainer.innerHTML = '<p>Aucun avis disponible.</p>';
                     }
                 });
             }
@@ -81,7 +85,6 @@
                 { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
                 { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
                 { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" },
-                // Ajoutez d'autres images si nécessaire
             ];
             let index = 0;
 
@@ -122,6 +125,7 @@
                 <li><a href="#services">Services</a></li>
                 <li><a href="#fabrications">Fabrications</a></li>
                 <li><a href="#about">À propos</a></li>
+                <li><a href="#reviews">Avis</a></li>
             </ul>
         </nav>
     </header>
@@ -204,10 +208,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #ffffff; /* Un fond blanc pour plus de contraste */
+            color: #333; /* Couleur du texte sombre */
         }
         h1, h2 {
-            color: #333;
+            color: #e91e63; /* Titre en rose */
         }
         .highlight {
             color: #e91e63;
@@ -228,6 +233,7 @@
             display: flex;
             align-items: center;
             position: relative;
+            margin: 20px 0;
         }
         .carousel-track {
             display: flex;
@@ -235,6 +241,7 @@
             width: 100%;
             height: 400px;
             position: relative;
+            background-color: #f4f4f4; /* Arrière-plan pour le carrousel */
         }
         .carousel-track img {
             width: 100%;
@@ -272,7 +279,7 @@
         }
         /* Styles des services */
         .services {
-            background-color: #fff;
+            background-color: #f9f9f9; /* Fond légèrement gris pour les services */
             padding: 20px;
             margin-top: 20px;
             border-radius: 5px;
@@ -283,12 +290,13 @@
             flex-wrap: wrap;
         }
         .service-box {
-            background-color: #f4f4f4;
+            background-color: #fff; /* Fond blanc pour chaque service */
             padding: 10px;
             border-radius: 5px;
             margin: 10px;
             width: calc(25% - 20px);
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre pour le style */
         }
         .service-box img {
             max-width: 100%;
@@ -297,9 +305,10 @@
         /* Styles des avis */
         #reviews {
             margin-top: 20px;
-            background-color: #fff;
+            background-color: #fff; /* Fond blanc pour la section des avis */
             padding: 20px;
             border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre pour le style */
         }
         .review {
             border-bottom: 1px solid #ccc;
@@ -309,10 +318,10 @@
             margin: 10px 0;
         }
         .star {
-            color: #e91e63;
+            color: #e91e63; /* Couleur des étoiles */
         }
         .star.filled {
-            color: #ffd700;
+            color: #ffd700; /* Couleur des étoiles remplies */
         }
     </style>
 </body>
