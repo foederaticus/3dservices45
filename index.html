@@ -128,6 +128,10 @@
 
         .carousel img {
             width: 100%;
+            display: none;
+        }
+
+        .carousel img.active {
             display: block;
         }
 
@@ -184,7 +188,7 @@
 <body>
     <!-- Carousel -->
     <div class="carousel">
-        <img src="image1.jpg" alt="Image 1">
+        <img src="image1.jpg" alt="Image 1" class="active">
         <img src="image2.jpg" alt="Image 2">
         <img src="image3.jpg" alt="Image 3">
         <button class="navigate prev" onclick="changeSlide(-1)">❮</button>
@@ -229,13 +233,13 @@
         const slides = document.querySelectorAll('.carousel img');
 
         function changeSlide(direction) {
-            slides[currentIndex].style.display = 'none';
+            slides[currentIndex].classList.remove('active');
             currentIndex = (currentIndex + direction + slides.length) % slides.length;
-            slides[currentIndex].style.display = 'block';
+            slides[currentIndex].classList.add('active');
         }
 
         // Initialize the first slide
-        slides[currentIndex].style.display = 'block';
+        slides[currentIndex].classList.add('active');
     </script>
 </body>
 </html>
