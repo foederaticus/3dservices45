@@ -18,186 +18,224 @@
             authDomain: "avismatrx3d.firebaseapp.com",
             databaseURL: "https://avismatrx3d-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "avismatrx3d",
-            storageBucket: "avismatrx3d.firebasestorage.app",
-            messagingSenderId: "616215343920",
-            appId: "1:616215343920:web:15646d086cd674f08a4ef5",
-            measurementId: "G-BTX2L716ME"
+            storageBucket: "avismatrx3d.appspot.com",
+            messagingSenderId: "450407631328",
+            appId: "1:450407631328:web:50c51415531f3846678617",
+            measurementId: "G-M6WZ3ZJCQ4"
         };
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-        const db = getDatabase(app);
+        const database = getDatabase(app);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fonctionnalité du carrousel
-            const images = [
-                { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
-                { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
-                { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" }
-            ];
-            let index = 0;
-            const track = document.querySelector(".carousel-track");
+        // Référence à la base de données
+        const avisRef = ref(database, 'avis/');
 
-            function updateCarousel() {
-                const prevIndex = (index - 1 + images.length) % images.length;
-                const nextIndex = (index + 1) % images.length;
-
-                track.innerHTML = `
-                    <img src="${images[prevIndex].src}" alt="Make ${prevIndex + 1}" onclick="openImageViewer('${images[prevIndex].src}', '${images[prevIndex].desc}')">
-                    <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
-                    <img src="${images[nextIndex].src}" alt="Make ${nextIndex + 1}" onclick="openImageViewer('${images[nextIndex].src}', '${images[nextIndex].desc}')">
-                `;
-            }
-
-            function nextSlide() {
-                index = (index + 1) % images.length;
-                updateCarousel();
-            }
-
-            function prevSlide() {
-                index = (index - 1 + images.length) % images.length;
-                updateCarousel();
-            }
-
-            setInterval(nextSlide, 4000);
-            updateCarousel();
-
-            // Soumettre un avis
-            document.getElementById('reviewForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                const name = document.getElementById('reviewerName').value;
-                const message = document.getElementById('reviewMessage').value;
-                
-                const reviewsRef = ref(db, 'reviews/' + Date.now());
-                set(reviewsRef, {
-                    name: name,
-                    message: message,
-                    timestamp: Date.now()
-                }).then(() => {
-                    alert('Avis soumis avec succès !');
-                    document.getElementById('reviewForm').reset();
-                    loadReviews();
-                });
+        // Fonction pour soumettre un avis
+        document.getElementById('avisForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const nom = document.getElementById('nom').value;
+            const avis = document.getElementById('avis').value;
+            const newAvisRef = ref(database, 'avis/' + nom);
+            set(newAvisRef, {
+                nom: nom,
+                avis: avis
             });
+            document.getElementById('avisForm').reset();
+        });
 
-            // Charger les avis
-            function loadReviews() {
-                const reviewsRef = ref(db, 'reviews/');
-                onValue(reviewsRef, (snapshot) => {
-                    const data = snapshot.val();
-                    const reviewsContainer = document.getElementById('reviews');
-                    reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
-                    for (const key in data) {
-                        const review = data[key];
-                        const reviewElement = document.createElement('div');
-                        reviewElement.innerHTML = `<strong>${review.name}</strong>: ${review.message}`;
-                        reviewsContainer.appendChild(reviewElement);
-                    }
-                });
+        // Fonction pour afficher les avis
+        onValue(avisRef, (snapshot) => {
+            const data = snapshot.val();
+            const reviewsContainer = document.getElementById('reviews');
+            reviewsContainer.innerHTML = '';
+            for (let key in data) {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review';
+                reviewDiv.innerHTML = `<strong>${data[key].nom}:</strong> ${data[key].avis}`;
+                reviewsContainer.appendChild(reviewDiv);
             }
-
-            // Charger les avis au chargement de la page
-            loadReviews();
-
-            // Ouvrir la visionneuse d'images
-            window.openImageViewer = function(src, desc) {
-                document.getElementById("viewerImage").src = src;
-                document.getElementById("viewerDescription").textContent = desc;
-                document.getElementById("imageViewer").style.display = "flex";
-            };
-
-            // Fermer la visionneuse d'images
-            window.closeImageViewer = function() {
-                document.getElementById("imageViewer").style.display = "none";
-            };
         });
     </script>
+    <style>
+        /* Style for the form */
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Style for form inputs */
+        form input, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Style for the submit button */
+        form button {
+            background-color: #FFA500; /* Orange color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #e68600; /* Darker orange on hover */
+        }
+
+        /* Style for the reviews section */
+        .reviews {
+            margin-top: 20px;
+        }
+
+        .review {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .review::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent transparent #fff transparent;
+        }
+
+        /* Carousel styles */
+        .carousel {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .carousel img {
+            width: 100%;
+            display: block;
+        }
+
+        .carousel .navigate {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .carousel .navigate.prev {
+            left: 10px;
+        }
+
+        .carousel .navigate.next {
+            right: 10px;
+        }
+
+        /* Services section */
+        .services {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .service {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* About section */
+        .about {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Bienvenue chez MatrX3D</h1>
-        <nav>
-            <ul>
-                <li><a href="#accueil">Accueil</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#fabrications">Fabrications</a></li>
-                <li><a href="#about">À propos</a></li>
-            </ul>
-        </nav>
-    </header>
+    <!-- Carousel -->
+    <div class="carousel">
+        <img src="image1.jpg" alt="Image 1">
+        <img src="image2.jpg" alt="Image 2">
+        <img src="image3.jpg" alt="Image 3">
+        <button class="navigate prev" onclick="changeSlide(-1)">❮</button>
+        <button class="navigate next" onclick="changeSlide(1)">❯</button>
+    </div>
 
-    <main>
-        <section id="accueil" class="hero">
-            <h2>Transformez vos idées en réalité</h2>
-            <p>Découvrez nos services d'impression 3D, découpe laser et électronique pour concrétiser tous vos projets.</p>
-            <a href="#services" class="cta-button">Explorez nos services</a>
-        </section>
+    <!-- Services -->
+    <section class="services">
+        <div class="service">
+            <h2>Service 1</h2>
+            <p>Description du service 1.</p>
+        </div>
+        <div class="service">
+            <h2>Service 2</h2>
+            <p>Description du service 2.</p>
+        </div>
+        <div class="service">
+            <h2>Service 3</h2>
+            <p>Description du service 3.</p>
+        </div>
+    </section>
 
-        <section id="services" class="services">
-            <h2>Nos Services</h2>
-            <div class="service-container">
-                <div class="service-box">
-                    <img src="images/3d-printing.jpg" alt="Impression 3D">
-                    <h3>Impression 3D</h3>
-                    <p>Fabrication rapide et précise d’objets en 3D pour prototypage ou production.</p>
-                </div>
-                <div class="service-box">
-                    <img src="images/laser-cutting.jpg" alt="Découpe Laser">
-                    <h3>Découpe Laser</h3>
-                    <p>Découpe et gravure de matériaux variés avec une précision extrême.</p>
-                </div>
-                <div class="service-box">
-                    <img src="images/electronics.jpg" alt="Électronique">
-                    <h3>Solutions Électroniques</h3>
-                    <p>Développement et intégration de circuits électroniques sur mesure.</p>
-                </div>
-                <div class="service-box">
-                    <img src="images/3d-modeling.png" alt="Modélisation 3D">
-                    <h3>Modélisation 3D</h3>
-                    <p>Création de modèles 3D personnalisés pour impression, conception et visualisation.</p>
-                </div>
-            </div>
-        </section>
+    <!-- About -->
+    <section class="about">
+        <h2>À propos de nous</h2>
+        <p>Informations sur l'entreprise ou le projet.</p>
+    </section>
 
-        <section id="fabrications">
-            <h2>Nos Fabrications</h2>
-            <div class="carousel-container">
-                <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
-                <div class="carousel-track"></div>
-                <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
-            </div>
-            <div class="pagination">
-                <button onclick="prevSlide()">Précédent</button>
-                <button onclick="nextSlide()">Suivant</button>
-            </div>
-            <div id="imageViewer" class="image-viewer">
-                <span class="close" onclick="closeImageViewer()" aria-label="Fermer">&times;</span>
-                <img id="viewerImage" src="" alt="Agrandissement">
-                <div id="viewerDescription" class="description-bubble"></div>
-            </div>
-        </section>
+    <!-- Avis -->
+    <h1>Laissez un avis</h1>
+    <form id="avisForm">
+        <label for="nom">Nom:</label>
+        <input type="text" id="nom" name="nom" required>
+        <label for="avis">Avis:</label>
+        <textarea id="avis" name="avis" rows="4" required></textarea>
+        <button type="submit">Soumettre</button>
+    </form>
+    <div id="reviews" class="reviews"></div>
 
-        <section id="about">
-            <h2>À propos de nous</h2>
-            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
-            <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
-        </section>
+    <script>
+        let currentIndex = 0;
+        const slides = document.querySelectorAll('.carousel img');
 
-        <section>
-            <h2>Avis</h2>
-            <form id="reviewForm">
-                <input type="text" id="reviewerName" placeholder="Votre nom" required>
-                <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
-                <button type="submit">Soumettre</button>
-            </form>
-            <div id="reviews"></div>
-        </section>
-    </main>
+        function changeSlide(direction) {
+            slides[currentIndex].style.display = 'none';
+            currentIndex = (currentIndex + direction + slides.length) % slides.length;
+            slides[currentIndex].style.display = 'block';
+        }
 
-    <footer>
-        <p>&copy; 2025 MatrX3D - Tous droits réservés</p>
-    </footer>
+        // Initialize the first slide
+        slides[currentIndex].style.display = 'block';
+    </script>
 </body>
 </html>
