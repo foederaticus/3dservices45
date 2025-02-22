@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3dServices-printing</title>
+    <link rel="stylesheet" href="complet.css">
+    <script defer src="complet.js"></script>
+</head>
+<body>
+    <header>
+        <center>
+        <h1>Bienvenue chez 3d Services Printing</h1>
+    </center>
+        <nav>
+            <ul>
+                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#fabrications">Fabrications</a></li>
+                <li><a href="#about">À propos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="accueil" class="hero">
+            <h2>Transformez vos idées en réalité</h2>
+            <p>Découvrez nos services d'impression 3D, découpe laser et électronique pour concrétiser tous vos projets.</p>
+            <a href="#services" class="cta-button">Explorez nos services</a>
+        </section>
+
+        <section id="services" class="services">
+            <h2>Nos Services</h2>
+            <div class="service-container">
+                <div class="service-box">
+                    <img src="images/3d-printing.jpg" alt="Impression 3D">
+                    <h3>Impression 3D</h3>
+                    <p>Fabrication rapide et précise d’objets en 3D pour prototypage ou production.</p>
+                </div>
+                <div class="service-box">
+                    <img src="images/laser-cutting.jpg" alt="Découpe Laser">
+                    <h3>Découpe Laser</h3>
+                    <p>Découpe et gravure de matériaux variés avec une précision extrême.</p>
+                </div>
+                <div class="service-box">
+                    <img src="images/electronics.jpg" alt="Électronique">
+                    <h3>Solutions Électroniques</h3>
+                    <p>Développement et intégration de circuits électroniques sur mesure.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="fabrications">
+            <h2>Nos Fabrications</h2>
+            <div class="carousel-container">
+                <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
+                <div class="carousel-track">
+                    <img src="images/make1.jpg" alt="Make 1" class="active" onclick="openImageViewer('images/make1.jpg', 'Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1')">
+                    <img src="images/make2.jpg" alt="Make 2" onclick="openImageViewer('images/make2.jpg', 'Un présentoir de toutes les couleurs imprimables en 3D')">
+                    <img src="images/make3.jpg" alt="Make 3" onclick="openImageViewer('images/make3.jpg', 'Un petit pot à crayon, pratique pour s\'organiser')">
+                </div>
+                <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
+            </div>
+            <div class="pagination">
+                <button onclick="prevSlide()">Précédent</button>
+                <button onclick="nextSlide()">Suivant</button>
+            </div>
+            <div id="imageViewer" class="image-viewer">
+                <span class="close" onclick="closeImageViewer()" aria-label="Fermer">&times;</span>
+                <img id="viewerImage" src="" alt="Agrandissement">
+                <div id="viewerDescription" class="description-bubble"></div>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>À propos de nous</h2>
+            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
+        
+            <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables. Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
+        
+            <h3>Qui suis-je ?</h3>
+            <p>Derrière ce projet, il y a <span class="highlight">une seule personne</span> : moi, <span class="highlight">Arthur</span> ! Travailler en solo me permet d’être à <span class="highlight">100%</span> impliqué sur chaque projet. Je prends le temps de peaufiner chaque détail pour garantir des <span class="highlight">résultats de qualité</span>, répondant parfaitement à vos attentes.</p>
+        
+            <p>Que vous soyez un <span class="highlight">particulier</span>, un <span class="highlight">professionnel</span> ou un <span class="highlight">créateur</span>, je suis là pour vous accompagner dans la réalisation de vos <span class="highlight">projets uniques</span>. N’hésitez pas à me contacter, je serais ravi de vous aider à <span class="highlight">donner vie à vos idées</span> !</p>
+        </section>
+        
+    </main>
+
+    <footer>
+        <button onclick="location.href='contact.html'" class="contact-btn">Contactez-nous</button>
+        <p>&copy; 2025 Vos Services. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
