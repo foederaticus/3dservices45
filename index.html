@@ -28,85 +28,73 @@
         const db = getDatabase(app);
 
         // Soumettre un avis
-        document.getElementById('reviewForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('reviewerName').value;
-            const message = document.getElementById('reviewMessage').value;
-            const rating = document.querySelector('input[name="rating"]:checked').value;
-
-            const reviewsRef = ref(db, 'reviews/' + Date.now());
-            set(reviewsRef, {
-                name: name,
-                message: message,
-                rating: rating,
-                timestamp: Date.now()
-            }).then(() => {
-                alert('Avis soumis avec succès !');
-                document.getElementById('reviewForm').reset();
-                loadReviews();
-            });
-        });
-
-        // Charger les avis
-        function loadReviews() {
-            const reviewsRef = ref(db, 'reviews/');
-            onValue(reviewsRef, (snapshot) => {
-                const data = snapshot.val();
-                const reviewsContainer = document.getElementById('reviews');
-                reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
-
-                for (const key in data) {
-                    const review = data[key];
-                    const reviewElement = document.createElement('div');
-                    reviewElement.classList.add('review');
-
-                    // Créer la notation par étoiles
-                    const stars = Array.from({ length: 5 }, (_, i) => {
-                        return `<span class="star ${i < review.rating ? 'filled' : ''}">&#9733;</span>`;
-                    }).join('');
-
-                    reviewElement.innerHTML = `
-                        <strong>${review.name}</strong> (${stars}): <p>${review.message}</p>
-                    `;
-                    reviewsContainer.appendChild(reviewElement);
-                }
-            });
-        }
-
-        // Charger les avis au chargement de la page
-        window.onload = loadReviews;
-
-        // Carrousel de fabrication
         document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('reviewForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('reviewerName').value;
+                const message = document.getElementById('reviewMessage').value;
+                const rating = document.querySelector('input[name="rating"]:checked').value;
+
+                const reviewsRef = ref(db, 'reviews/' + Date.now());
+                set(reviewsRef, {
+                    name: name,
+                    message: message,
+                    rating: rating,
+                    timestamp: Date.now()
+                }).then(() => {
+                    alert('Avis soumis avec succès !');
+                    document.getElementById('reviewForm').reset();
+                    loadReviews();
+                });
+            });
+
+            // Charger les avis
+            loadReviews();
+            function loadReviews() {
+                const reviewsRef = ref(db, 'reviews/');
+                onValue(reviewsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    const reviewsContainer = document.getElementById('reviews');
+                    reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
+
+                    for (const key in data) {
+                        const review = data[key];
+                        const reviewElement = document.createElement('div');
+                        reviewElement.classList.add('review');
+
+                        // Créer la notation par étoiles
+                        const stars = Array.from({ length: 5 }, (_, i) => {
+                            return `<span class="star ${i < review.rating ? 'filled' : ''}">&#9733;</span>`;
+                        }).join('');
+
+                        reviewElement.innerHTML = `
+                            <strong>${review.name}</strong> (${stars}): <p>${review.message}</p>
+                        `;
+                        reviewsContainer.appendChild(reviewElement);
+                    }
+                });
+            }
+
+            // Carrousel de fabrication
             const images = [
                 { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
                 { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
                 { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" },
-                // Ajoute d'autres images si nécessaire
+                // Ajoutez d'autres images si nécessaire
             ];
             let index = 0;
 
             const track = document.querySelector(".carousel-track");
 
             function updateCarousel() {
-                const prevIndex = (index - 1 + images.length) % images.length;
-                const nextIndex = (index + 1) % images.length;
-
                 track.innerHTML = `
-                    <img src="${images[prevIndex].src}" alt="Make ${prevIndex + 1}" onclick="openImageViewer('${images[prevIndex].src}', '${images[prevIndex].desc}')">
                     <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
-                    <img src="${images[nextIndex].src}" alt="Make ${nextIndex + 1}" onclick="openImageViewer('${images[nextIndex].src}', '${images[nextIndex].desc}')">
                 `;
             }
 
             function nextSlide() {
                 index = (index + 1) % images.length;
-                updateCarousel();
-            }
-
-            function prevSlide() {
-                index = (index - 1 + images.length) % images.length;
                 updateCarousel();
             }
 
@@ -174,14 +162,12 @@
         <section id="fabrications">
             <h2>Nos Fabrications</h2>
             <div class="carousel-container">
-                <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
                 <div class="carousel-track"></div>
-                <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
-            </div>
-            <div id="imageViewer" class="image-viewer">
-                <span class="close" onclick="closeImageViewer()" aria-label="Fermer">&times;</span>
-                <img id="viewerImage" src="" alt="Agrandissement">
-                <div id="viewerDescription" class="description-bubble"></div>
+                <div id="imageViewer" class="image-viewer">
+                    <span class="close" onclick="closeImageViewer()" aria-label="Fermer">&times;</span>
+                    <img id="viewerImage" src="" alt="Agrandissement">
+                    <div id="viewerDescription" class="description-bubble"></div>
+                </div>
             </div>
         </section>
 
@@ -248,117 +234,85 @@
             overflow: hidden;
             width: 100%;
             height: 400px;
+            position: relative;
         }
         .carousel-track img {
             width: 100%;
             height: auto;
-            transition: opacity 0.5s;
+            transition: transform 0.5s ease;
         }
-        .active {
-            opacity: 1;
-        }
-        .carousel-arrow {
-            background-color: transparent;
-            border: none;
-            font-size: 2rem;
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 100;
-        }
-        .carousel-arrow.left {
-            left: 10px;
-        }
-        .carousel-arrow.right {
-            right: 10px;
-        }
-        /* Styles du formulaire */
-        #reviewForm {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        #reviewForm input, 
-        #reviewForm textarea {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 100%;
-        }
-        #reviewForm textarea {
-            height: 100px;
-        }
-        .rating {
-            display: flex;
-            gap: 5px;
-        }
-        .rating label {
-            cursor: pointer;
-        }
-        button[type="submit"] {
-            background-color: #e91e63;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button[type="submit"]:hover {
-            background-color: #c2185b;
-        }
-        /* Styles de l'image viewer */
         .image-viewer {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
         .image-viewer img {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 80%;
+            max-height: 80%;
+        }
+        .description-bubble {
+            color: white;
+            margin-top: 10px;
+            text-align: center;
         }
         .close {
             position: absolute;
             top: 20px;
             right: 20px;
             color: white;
-            font-size: 2rem;
+            font-size: 30px;
             cursor: pointer;
         }
-        .description-bubble {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
+        /* Styles des services */
+        .services {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
             border-radius: 5px;
         }
+        .service-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .service-box {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px;
+            width: calc(25% - 20px);
+            text-align: center;
+        }
+        .service-box img {
+            max-width: 100%;
+            height: auto;
+        }
         /* Styles des avis */
+        #reviews {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
         .review {
-            background: #fff;
-            padding: 15px;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        .rating {
             margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         .star {
-            color: gold;
+            color: #e91e63;
         }
         .star.filled {
-            color: gold;
+            color: #ffd700;
         }
     </style>
 </body>
