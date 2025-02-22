@@ -7,112 +7,122 @@
     <link rel="shortcut icon" href="logo.ico" />
     <link rel="stylesheet" href="complet.css">
     <script type="module">
-        // Importer les fonctions Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        // Importer les fonctions nécessaires de Firebase
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, onValue } from "firebase/database";
 
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBozqQRLorjRC48nzn4UDLTmv3h34yhqXs",
-            authDomain: "avismatrx3d.firebaseapp.com",
-            databaseURL: "https://avismatrx3d-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "avismatrx3d",
-            storageBucket: "avismatrx3d.firebasestorage.app",
-            messagingSenderId: "616215343920",
-            appId: "1:616215343920:web:15646d086cd674f08a4ef5",
-            measurementId: "G-BTX2L716ME"
-        };
+// Configuration de Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBozqQRLorjRC48nzn4UDLTmv3h34yhqXs",
+    authDomain: "avismatrx3d.firebaseapp.com",
+    databaseURL: "https://avismatrx3d-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "avismatrx3d",
+    storageBucket: "avismatrx3d.firebasestorage.app",
+    messagingSenderId: "616215343920",
+    appId: "1:616215343920:web:15646d086cd674f08a4ef5",
+    measurementId: "G-BTX2L716ME"
+};
 
-        // Initialiser Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getDatabase(app);
+// Initialiser Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fonctionnalité du carrousel
-            const images = [
-                { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
-                { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
-                { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" }
-            ];
-            let index = 0;
-            const track = document.querySelector(".carousel-track");
+// Soumettre un avis
+document.getElementById('reviewForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('reviewerName').value;
+    const message = document.getElementById('reviewMessage').value;
+    const rating = document.querySelector('input[name="rating"]:checked').value;
 
-            function updateCarousel() {
-                const prevIndex = (index - 1 + images.length) % images.length;
-                const nextIndex = (index + 1) % images.length;
+    const reviewsRef = ref(db, 'reviews/' + Date.now());
+    set(reviewsRef, {
+        name: name,
+        message: message,
+        rating: rating,
+        timestamp: Date.now()
+    }).then(() => {
+        alert('Avis soumis avec succès !');
+        document.getElementById('reviewForm').reset();
+        loadReviews();
+    });
+});
 
-                track.innerHTML = `
-                    <img src="${images[prevIndex].src}" alt="Make ${prevIndex + 1}" onclick="openImageViewer('${images[prevIndex].src}', '${images[prevIndex].desc}')">
-                    <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
-                    <img src="${images[nextIndex].src}" alt="Make ${nextIndex + 1}" onclick="openImageViewer('${images[nextIndex].src}', '${images[nextIndex].desc}')">
-                `;
-            }
+// Charger les avis
+function loadReviews() {
+    const reviewsRef = ref(db, 'reviews/');
+    onValue(reviewsRef, (snapshot) => {
+        const data = snapshot.val();
+        const reviewsContainer = document.getElementById('reviews');
+        reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
 
-            function nextSlide() {
-                index = (index + 1) % images.length;
-                updateCarousel();
-            }
+        for (const key in data) {
+            const review = data[key];
+            const reviewElement = document.createElement('div');
+            reviewElement.classList.add('review');
 
-            function prevSlide() {
-                index = (index - 1 + images.length) % images.length;
-                updateCarousel();
-            }
+            // Créer la notation par étoiles
+            const stars = Array.from({ length: 5 }, (_, i) => {
+                return `<span class="star ${i < review.rating ? 'filled' : ''}">&#9733;</span>`;
+            }).join('');
 
-            setInterval(nextSlide, 4000);
-            updateCarousel();
+            reviewElement.innerHTML = `
+                <strong>${review.name}</strong> (${stars}): <p>${review.message}</p>
+            `;
+            reviewsContainer.appendChild(reviewElement);
+        }
+    });
+}
 
-            // Soumettre un avis
-            document.getElementById('reviewForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                const name = document.getElementById('reviewerName').value;
-                const message = document.getElementById('reviewMessage').value;
-                
-                const reviewsRef = ref(db, 'reviews/' + Date.now());
-                set(reviewsRef, {
-                    name: name,
-                    message: message,
-                    timestamp: Date.now()
-                }).then(() => {
-                    alert('Avis soumis avec succès !');
-                    document.getElementById('reviewForm').reset();
-                    loadReviews();
-                });
-            });
+// Charger les avis au chargement de la page
+window.onload = loadReviews;
 
-            // Charger les avis
-            function loadReviews() {
-                const reviewsRef = ref(db, 'reviews/');
-                onValue(reviewsRef, (snapshot) => {
-                    const data = snapshot.val();
-                    const reviewsContainer = document.getElementById('reviews');
-                    reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
-                    for (const key in data) {
-                        const review = data[key];
-                        const reviewElement = document.createElement('div');
-                        reviewElement.innerHTML = `<strong>${review.name}</strong>: ${review.message}`;
-                        reviewsContainer.appendChild(reviewElement);
-                    }
-                });
-            }
+// Carrousel de fabrication
+document.addEventListener('DOMContentLoaded', function() {
+    const images = [
+        { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
+        { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
+        { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" },
+        // Ajoute d'autres images si nécessaire
+    ];
+    let index = 0;
 
-            // Charger les avis au chargement de la page
-            loadReviews();
+    const track = document.querySelector(".carousel-track");
 
-            // Ouvrir la visionneuse d'images
-            window.openImageViewer = function(src, desc) {
-                document.getElementById("viewerImage").src = src;
-                document.getElementById("viewerDescription").textContent = desc;
-                document.getElementById("imageViewer").style.display = "flex";
-            };
+    function updateCarousel() {
+        const prevIndex = (index - 1 + images.length) % images.length;
+        const nextIndex = (index + 1) % images.length;
 
-            // Fermer la visionneuse d'images
-            window.closeImageViewer = function() {
-                document.getElementById("imageViewer").style.display = "none";
-            };
-        });
+        track.innerHTML = `
+            <img src="${images[prevIndex].src}" alt="Make ${prevIndex + 1}" onclick="openImageViewer('${images[prevIndex].src}', '${images[prevIndex].desc}')">
+            <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
+            <img src="${images[nextIndex].src}" alt="Make ${nextIndex + 1}" onclick="openImageViewer('${images[nextIndex].src}', '${images[nextIndex].desc}')">
+        `;
+    }
+
+    function nextSlide() {
+        index = (index + 1) % images.length;
+        updateCarousel();
+    }
+
+    function prevSlide() {
+        index = (index - 1 + images.length) % images.length;
+        updateCarousel();
+    }
+
+    setInterval(nextSlide, 4000);
+    updateCarousel();
+
+    window.openImageViewer = function(src, desc) {
+        document.getElementById("viewerImage").src = src;
+        document.getElementById("viewerDescription").textContent = desc;
+        document.getElementById("imageViewer").style.display = "flex";
+    };
+
+    window.closeImageViewer = function() {
+        document.getElementById("imageViewer").style.display = "none";
+    };
+});
     </script>
 </head>
 <body>
@@ -185,15 +195,25 @@
             <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
         </section>
 
-        <section>
-            <h2>Avis</h2>
-            <form id="reviewForm">
-                <input type="text" id="reviewerName" placeholder="Votre nom" required>
-                <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
-                <button type="submit">Soumettre</button>
-            </form>
-            <div id="reviews"></div>
-        </section>
+       <section id="avis">
+    <h2>Donnez votre avis</h2>
+    <form id="reviewForm">
+        <input type="text" id="reviewerName" placeholder="Votre nom" required />
+        <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
+        <div class="rating">
+            <span>Évaluation :</span>
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <input type="hidden" id="reviewRating" value="0" />
+        <button type="submit">Soumettre votre avis</button>
+    </form>
+    <div id="reviews"></div>
+</section>
+
     </main>
 
     <footer>
