@@ -6,13 +6,118 @@
     <title>MatrX3D</title>
     <link rel="shortcut icon" href="logo.ico" />
     <link rel="stylesheet" href="complet.css">
-    <script defer src="complet.js"></script>
+    <script type="module">
+        // Importer les fonctions Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBozqQRLorjRC48nzn4UDLTmv3h34yhqXs",
+            authDomain: "avismatrx3d.firebaseapp.com",
+            databaseURL: "https://avismatrx3d-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "avismatrx3d",
+            storageBucket: "avismatrx3d.firebasestorage.app",
+            messagingSenderId: "616215343920",
+            appId: "1:616215343920:web:15646d086cd674f08a4ef5",
+            measurementId: "G-BTX2L716ME"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonctionnalité du carrousel
+            const images = [
+                { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
+                { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
+                { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" }
+            ];
+            let index = 0;
+            const track = document.querySelector(".carousel-track");
+
+            function updateCarousel() {
+                const prevIndex = (index - 1 + images.length) % images.length;
+                const nextIndex = (index + 1) % images.length;
+
+                track.innerHTML = `
+                    <img src="${images[prevIndex].src}" alt="Make ${prevIndex + 1}" onclick="openImageViewer('${images[prevIndex].src}', '${images[prevIndex].desc}')">
+                    <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
+                    <img src="${images[nextIndex].src}" alt="Make ${nextIndex + 1}" onclick="openImageViewer('${images[nextIndex].src}', '${images[nextIndex].desc}')">
+                `;
+            }
+
+            function nextSlide() {
+                index = (index + 1) % images.length;
+                updateCarousel();
+            }
+
+            function prevSlide() {
+                index = (index - 1 + images.length) % images.length;
+                updateCarousel();
+            }
+
+            setInterval(nextSlide, 4000);
+            updateCarousel();
+
+            // Soumettre un avis
+            document.getElementById('reviewForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('reviewerName').value;
+                const message = document.getElementById('reviewMessage').value;
+                
+                const reviewsRef = ref(db, 'reviews/' + Date.now());
+                set(reviewsRef, {
+                    name: name,
+                    message: message,
+                    timestamp: Date.now()
+                }).then(() => {
+                    alert('Avis soumis avec succès !');
+                    document.getElementById('reviewForm').reset();
+                    loadReviews();
+                });
+            });
+
+            // Charger les avis
+            function loadReviews() {
+                const reviewsRef = ref(db, 'reviews/');
+                onValue(reviewsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    const reviewsContainer = document.getElementById('reviews');
+                    reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
+                    for (const key in data) {
+                        const review = data[key];
+                        const reviewElement = document.createElement('div');
+                        reviewElement.innerHTML = `<strong>${review.name}</strong>: ${review.message}`;
+                        reviewsContainer.appendChild(reviewElement);
+                    }
+                });
+            }
+
+            // Charger les avis au chargement de la page
+            loadReviews();
+
+            // Ouvrir la visionneuse d'images
+            window.openImageViewer = function(src, desc) {
+                document.getElementById("viewerImage").src = src;
+                document.getElementById("viewerDescription").textContent = desc;
+                document.getElementById("imageViewer").style.display = "flex";
+            };
+
+            // Fermer la visionneuse d'images
+            window.closeImageViewer = function() {
+                document.getElementById("imageViewer").style.display = "none";
+            };
+        });
+    </script>
 </head>
 <body>
     <header>
-        <center>
         <h1>Bienvenue chez MatrX3D</h1>
-    </center>
         <nav>
             <ul>
                 <li><a href="#accueil">Accueil</a></li>
@@ -30,41 +135,37 @@
             <a href="#services" class="cta-button">Explorez nos services</a>
         </section>
 
-       <section id="services" class="services">
-    <h2>Nos Services</h2>
-    <div class="service-container">
-        <div class="service-box">
-            <img src="images/3d-printing.jpg" alt="Impression 3D">
-            <h3>Impression 3D</h3>
-            <p>Fabrication rapide et précise d’objets en 3D pour prototypage ou production.</p>
-        </div>
-        <div class="service-box">
-            <img src="images/laser-cutting.jpg" alt="Découpe Laser">
-            <h3>Découpe Laser</h3>
-            <p>Découpe et gravure de matériaux variés avec une précision extrême.</p>
-        </div>
-        <div class="service-box">
-            <img src="images/electronics.jpg" alt="Électronique">
-            <h3>Solutions Électroniques</h3>
-            <p>Développement et intégration de circuits électroniques sur mesure.</p>
-        </div>
-        <div class="service-box">
-            <img src="images/3d-modeling.png" alt="Modélisation 3D">
-            <h3>Modélisation 3D</h3>
-            <p>Création de modèles 3D personnalisés pour impression, conception et visualisation.</p>
-        </div>
-    </div>
-</section>
+        <section id="services" class="services">
+            <h2>Nos Services</h2>
+            <div class="service-container">
+                <div class="service-box">
+                    <img src="images/3d-printing.jpg" alt="Impression 3D">
+                    <h3>Impression 3D</h3>
+                    <p>Fabrication rapide et précise d’objets en 3D pour prototypage ou production.</p>
+                </div>
+                <div class="service-box">
+                    <img src="images/laser-cutting.jpg" alt="Découpe Laser">
+                    <h3>Découpe Laser</h3>
+                    <p>Découpe et gravure de matériaux variés avec une précision extrême.</p>
+                </div>
+                <div class="service-box">
+                    <img src="images/electronics.jpg" alt="Électronique">
+                    <h3>Solutions Électroniques</h3>
+                    <p>Développement et intégration de circuits électroniques sur mesure.</p>
+                </div>
+                <div class="service-box">
+                    <img src="images/3d-modeling.png" alt="Modélisation 3D">
+                    <h3>Modélisation 3D</h3>
+                    <p>Création de modèles 3D personnalisés pour impression, conception et visualisation.</p>
+                </div>
+            </div>
+        </section>
 
         <section id="fabrications">
             <h2>Nos Fabrications</h2>
             <div class="carousel-container">
                 <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
-                <div class="carousel-track">
-                    <img src="images/make1.jpg" alt="Make 1" class="active" onclick="openImageViewer('images/make1.jpg', 'Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1')">
-                    <img src="images/make2.jpg" alt="Make 2" onclick="openImageViewer('images/make2.jpg', 'Un présentoir de toutes les couleurs imprimables en 3D')">
-                    <img src="images/make3.jpg" alt="Make 3" onclick="openImageViewer('images/make3.jpg', 'Un petit pot à crayon, pratique pour s\'organiser')">
-                </div>
+                <div class="carousel-track"></div>
                 <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
             </div>
             <div class="pagination">
@@ -78,8 +179,14 @@
             </div>
         </section>
 
-        <section id="avis">
-            <h2>Laissez un avis</h2>
+        <section id="about">
+            <h2>À propos de nous</h2>
+            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
+            <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
+        </section>
+
+        <section>
+            <h2>Avis</h2>
             <form id="reviewForm">
                 <input type="text" id="reviewerName" placeholder="Votre nom" required>
                 <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
@@ -87,25 +194,10 @@
             </form>
             <div id="reviews"></div>
         </section>
-
-
-        <section id="about">
-            <h2>À propos de nous</h2>
-            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
-        
-            <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
-        
-            <h3>Qui suis-je ?</h3>
-            <p>Derrière ce projet, il y a <span class="highlight">une seule personne</span> : moi, <span class="highlight">Arthur</span> ! Travailler en solo me permet d’être à <span class="highlight">100%</span> impliqué sur chaque projet. Je prends le temps de peaufiner chaque détail pour garantir des <span class="highlight">résultats de qualité</span>, répondant parfaitement à vos attentes.</p>
-        
-            <p>Que vous soyez un <span class="highlight">particulier</span>, un <span class="highlight">professionnel</span> ou un <span class="highlight">créateur</span>, je suis là pour vous accompagner dans la réalisation de vos <span class="highlight">projets uniques</span>. N’hésitez pas à me contacter, je serais ravi de vous aider à <span class="highlight">donner vie à vos idées</span> !</p>
-        </section>
-        
     </main>
 
     <footer>
-        <button onclick="location.href='contact.html'" class="contact-btn">Contactez-nous</button>
-        <p>&copy; 2025 MatrX3D. Tous droits réservés.</p>
+        <p>&copy; 2025 MatrX3D - Tous droits réservés</p>
     </footer>
 </body>
 </html>
