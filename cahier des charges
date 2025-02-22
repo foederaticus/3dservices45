@@ -1,5 +1,5 @@
 -rendre responsive 
--créer une page login ->récupérer le mail du login pour les "contact"
+-créer une page login ->récupérer le mail du login pour les "contact"->afficher l'état de connexion lorsque connecter 
 -ajouter des animations de transition/ d'interraction
 -checker le système denvoi de mail par "contact"
 -créer une page pour les avis
