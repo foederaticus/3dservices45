@@ -113,6 +113,31 @@
                 document.getElementById("imageViewer").style.display = "none";
             };
         });
+        import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+
+const auth = getAuth();
+const loginButton = document.getElementById("loginButton");
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // L'utilisateur est connecté
+        loginButton.innerText = "Vous êtes connecté";
+        loginButton.style.backgroundColor = "green";
+        loginButton.style.cursor = "default";
+        
+        // Empêcher le clic (optionnel)
+        loginButton.onclick = null;
+    } else {
+        // L'utilisateur est déconnecté
+        loginButton.innerText = "Connexion";
+        loginButton.style.backgroundColor = "#e91e63";
+        loginButton.style.cursor = "pointer";
+        loginButton.onclick = () => {
+            window.location.href = "connexion.html";
+        };
+    }
+});
+
     </script>
     <style>
         header {
