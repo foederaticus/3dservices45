@@ -7,11 +7,12 @@
     <link rel="shortcut icon" href="logo.ico" />
     <link rel="stylesheet" href="complet.css">
     <script type="module">
-        // Importer les fonctions nécessaires de Firebase
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, set, onValue } from "firebase/database";
+        // Importer les fonctions Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
 
-        // Configuration de Firebase
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBozqQRLorjRC48nzn4UDLTmv3h34yhqXs",
             authDomain: "avismatrx3d.firebaseapp.com",
@@ -25,22 +26,54 @@
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getDatabase(app);
 
-        // Soumettre un avis
         document.addEventListener('DOMContentLoaded', function() {
+            // Fonctionnalité du carrousel
+            const images = [
+                { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
+                { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
+                { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" }
+            ];
+            let index = 0;
+            const track = document.querySelector(".carousel-track");
+
+            function updateCarousel() {
+                const prevIndex = (index - 1 + images.length) % images.length;
+                const nextIndex = (index + 1) % images.length;
+
+                track.innerHTML = `
+                    <img src="${images[prevIndex].src}" alt="Make ${prevIndex + 1}" onclick="openImageViewer('${images[prevIndex].src}', '${images[prevIndex].desc}')">
+                    <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
+                    <img src="${images[nextIndex].src}" alt="Make ${nextIndex + 1}" onclick="openImageViewer('${images[nextIndex].src}', '${images[nextIndex].desc}')">
+                `;
+            }
+
+            function nextSlide() {
+                index = (index + 1) % images.length;
+                updateCarousel();
+            }
+
+            function prevSlide() {
+                index = (index - 1 + images.length) % images.length;
+                updateCarousel();
+            }
+
+            setInterval(nextSlide, 4000);
+            updateCarousel();
+
+            // Soumettre un avis
             document.getElementById('reviewForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 
                 const name = document.getElementById('reviewerName').value;
                 const message = document.getElementById('reviewMessage').value;
-                const rating = document.querySelector('input[name="rating"]:checked').value;
-
+                
                 const reviewsRef = ref(db, 'reviews/' + Date.now());
                 set(reviewsRef, {
                     name: name,
                     message: message,
-                    rating: rating,
                     timestamp: Date.now()
                 }).then(() => {
                     alert('Avis soumis avec succès !');
@@ -50,66 +83,32 @@
             });
 
             // Charger les avis
-            loadReviews();
             function loadReviews() {
                 const reviewsRef = ref(db, 'reviews/');
                 onValue(reviewsRef, (snapshot) => {
                     const data = snapshot.val();
                     const reviewsContainer = document.getElementById('reviews');
                     reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
-
-                    if (data) {
-                        for (const key in data) {
-                            const review = data[key];
-                            const reviewElement = document.createElement('div');
-                            reviewElement.classList.add('review');
-
-                            // Créer la notation par étoiles
-                            const stars = Array.from({ length: 5 }, (_, i) => {
-                                return `<span class="star ${i < review.rating ? 'filled' : ''}">&#9733;</span>`;
-                            }).join('');
-
-                            reviewElement.innerHTML = `
-                                <strong>${review.name}</strong> (${stars}): <p>${review.message}</p>
-                            `;
-                            reviewsContainer.appendChild(reviewElement);
-                        }
-                    } else {
-                        reviewsContainer.innerHTML = '<p>Aucun avis disponible.</p>';
+                    for (const key in data) {
+                        const review = data[key];
+                        const reviewElement = document.createElement('div');
+                        reviewElement.innerHTML = `<strong>${review.name}</strong>: ${review.message}`;
+                        reviewsContainer.appendChild(reviewElement);
                     }
                 });
             }
 
-            // Carrousel de fabrication
-            const images = [
-                { src: "images/make1.jpg", desc: "Un petit présentoir des circuits de formule 1, un super cadeau pour tout passionné(e) de formule 1" },
-                { src: "images/make2.jpg", desc: "Un présentoir de toutes les couleurs imprimables en 3D" },
-                { src: "images/make3.jpg", desc: "Un petit pot à crayon, pratique pour s'organiser" },
-            ];
-            let index = 0;
+            // Charger les avis au chargement de la page
+            loadReviews();
 
-            const track = document.querySelector(".carousel-track");
-
-            function updateCarousel() {
-                track.innerHTML = `
-                    <img src="${images[index].src}" alt="Make ${index + 1}" class="active" onclick="openImageViewer('${images[index].src}', '${images[index].desc}')">
-                `;
-            }
-
-            function nextSlide() {
-                index = (index + 1) % images.length;
-                updateCarousel();
-            }
-
-            setInterval(nextSlide, 4000);
-            updateCarousel();
-
+            // Ouvrir la visionneuse d'images
             window.openImageViewer = function(src, desc) {
                 document.getElementById("viewerImage").src = src;
                 document.getElementById("viewerDescription").textContent = desc;
                 document.getElementById("imageViewer").style.display = "flex";
             };
 
+            // Fermer la visionneuse d'images
             window.closeImageViewer = function() {
                 document.getElementById("imageViewer").style.display = "none";
             };
@@ -125,7 +124,6 @@
                 <li><a href="#services">Services</a></li>
                 <li><a href="#fabrications">Fabrications</a></li>
                 <li><a href="#about">À propos</a></li>
-                <li><a href="#reviews">Avis</a></li>
             </ul>
         </nav>
     </header>
@@ -166,163 +164,40 @@
         <section id="fabrications">
             <h2>Nos Fabrications</h2>
             <div class="carousel-container">
+                <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
                 <div class="carousel-track"></div>
-                <div id="imageViewer" class="image-viewer">
-                    <span class="close" onclick="closeImageViewer()" aria-label="Fermer">&times;</span>
-                    <img id="viewerImage" src="" alt="Agrandissement">
-                    <div id="viewerDescription" class="description-bubble"></div>
-                </div>
+                <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
+            </div>
+            <div class="pagination">
+                <button onclick="prevSlide()">Précédent</button>
+                <button onclick="nextSlide()">Suivant</button>
+            </div>
+            <div id="imageViewer" class="image-viewer">
+                <span class="close" onclick="closeImageViewer()" aria-label="Fermer">&times;</span>
+                <img id="viewerImage" src="" alt="Agrandissement">
+                <div id="viewerDescription" class="description-bubble"></div>
             </div>
         </section>
 
         <section id="about">
             <h2>À propos de nous</h2>
-            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai fondé MatrX3D pour aider les créateurs, les entreprises et les passionnés à réaliser leurs idées.</p>
+            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
+            <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
         </section>
 
-        <section id="reviews">
-            <h2>Vos Avis</h2>
+        <section>
+            <h2>Avis</h2>
             <form id="reviewForm">
                 <input type="text" id="reviewerName" placeholder="Votre nom" required>
-                <textarea id="reviewMessage" placeholder="Votre avis..." required></textarea>
-                <div class="rating">
-                    <label><input type="radio" name="rating" value="1" required> ★</label>
-                    <label><input type="radio" name="rating" value="2"> ★★</label>
-                    <label><input type="radio" name="rating" value="3"> ★★★</label>
-                    <label><input type="radio" name="rating" value="4"> ★★★★</label>
-                    <label><input type="radio" name="rating" value="5"> ★★★★★</label>
-                </div>
-                <button type="submit">Soumettre un avis</button>
+                <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
+                <button type="submit">Soumettre</button>
             </form>
             <div id="reviews"></div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2023 MatrX3D. Tous droits réservés.</p>
+        <p>&copy; 2025 MatrX3D - Tous droits réservés</p>
     </footer>
-
-    <style>
-        /* Styles globaux */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff; /* Un fond blanc pour plus de contraste */
-            color: #333; /* Couleur du texte sombre */
-        }
-        h1, h2 {
-            color: #e91e63; /* Titre en rose */
-        }
-        .highlight {
-            color: #e91e63;
-        }
-        .cta-button {
-            background-color: #e91e63;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .cta-button:hover {
-            background-color: #c2185b;
-        }
-        /* Styles du carrousel */
-        .carousel-container {
-            display: flex;
-            align-items: center;
-            position: relative;
-            margin: 20px 0;
-        }
-        .carousel-track {
-            display: flex;
-            overflow: hidden;
-            width: 100%;
-            height: 400px;
-            position: relative;
-            background-color: #f4f4f4; /* Arrière-plan pour le carrousel */
-        }
-        .carousel-track img {
-            width: 100%;
-            height: auto;
-            transition: transform 0.5s ease;
-        }
-        .image-viewer {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .image-viewer img {
-            max-width: 80%;
-            max-height: 80%;
-        }
-        .description-bubble {
-            color: white;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-        }
-        /* Styles des services */
-        .services {
-            background-color: #f9f9f9; /* Fond légèrement gris pour les services */
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-        .service-container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .service-box {
-            background-color: #fff; /* Fond blanc pour chaque service */
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px;
-            width: calc(25% - 20px);
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre pour le style */
-        }
-        .service-box img {
-            max-width: 100%;
-            height: auto;
-        }
-        /* Styles des avis */
-        #reviews {
-            margin-top: 20px;
-            background-color: #fff; /* Fond blanc pour la section des avis */
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre pour le style */
-        }
-        .review {
-            border-bottom: 1px solid #ccc;
-            padding: 10px 0;
-        }
-        .rating {
-            margin: 10px 0;
-        }
-        .star {
-            color: #e91e63; /* Couleur des étoiles */
-        }
-        .star.filled {
-            color: #ffd700; /* Couleur des étoiles remplies */
-        }
-    </style>
 </body>
 </html>
