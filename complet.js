@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { src: "images/make7.jpg", desc: "Un organisateur de bureau complet, ne laisser plus rien au hasard avec l'impression 3d" },
         { src: "images/make8.jpg", desc: "Le support de manette de ps4 discret mais pratique" },
         { src: "images/make9.jpg", desc: "Un grand pot a crayon tour effeil pour les fans de Paris" },
-        { src: "images/make10.jpg", desc: "Un rangement pour les boite de jeut de PS4 / PS5" },
+        { src: "images/make10.jpg", desc: "Un rangement pour les boite de jeux de PS4 / PS5" },
         { src: "images/make11.jpg", desc: "Un rangement discret mais propre pour votre console" },
         { src: "images/make12.jpg", desc: "Un tee parfait pour tous fan de rugby personalisable avec votre club favori" }
     ];
