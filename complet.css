@@ -198,3 +198,47 @@ footer {
     color: #ff6600; /* Orange vif pour attirer l'attention */
     font-weight: bold;
 }
+/* Styles pour les avis */
+#avis {
+    padding: 40px;
+    text-align: center;
+}
+
+#reviews {
+    margin-top: 20px;
+}
+
+.review {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    text-align: left;
+}
+
+.review strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.review .stars {
+    color: gold;
+}
+
+.rating {
+    margin: 10px 0;
+}
+
+.star {
+    font-size: 24px;
+    cursor: pointer;
+    color: gray;
+}
+
+.star:hover,
+.star.selected {
+    color: gold;
+}
+
