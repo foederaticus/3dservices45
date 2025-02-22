@@ -4,13 +4,13 @@ import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9
 
 // 🔥 Configuration Firebase
 const firebaseConfig = {
-    apiKey: "VOTRE_API_KEY",
-    authDomain: "VOTRE_PROJET.firebaseapp.com",
-    databaseURL: "https://VOTRE_PROJET-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "VOTRE_PROJET",
-    storageBucket: "VOTRE_PROJET.appspot.com",
-    messagingSenderId: "VOTRE_MESSAGING_ID",
-    appId: "VOTRE_APP_ID"
+    apiKey: "AIzaSyA_E4pTqzqxR7uPpSQ0jqfJFgSLDYdt5lk",
+  authDomain: "mmatrx3dconnect.firebaseapp.com",
+  projectId: "mmatrx3dconnect",
+  storageBucket: "mmatrx3dconnect.firebasestorage.app",
+  messagingSenderId: "729919228332",
+  appId: "1:729919228332:web:f2addf83992f2165521209",
+  measurementId: "G-2S4HS4BYJB"
 };
 
 // Initialisation Firebase
