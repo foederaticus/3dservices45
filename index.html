@@ -114,7 +114,7 @@
             };
         });
     </script>
-     <style>
+    <style>
         .ajout-container {
             background-color: white;
             border: 1px solid #ddd;
@@ -127,17 +127,35 @@
         .ajout-container h2 {
             margin-top: 0;
         }
+        .contact-button {
+            background-color: orange; /* Couleur orange */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            margin: 20px auto;
+            font-size: 16px;
+        }
+        .contact-button:hover {
+            background-color: darkorange; /* Couleur en survol */
+        }
     </style>
 </head>
 <body>
     <header>
+        <center>
         <h1>Bienvenue chez MatrX3D</h1>
+            </center>
         <nav>
             <ul>
                 <li><a href="#accueil">Accueil</a></li>
                 <li><a href="#services">Services</a></li>
                 <li><a href="#fabrications">Fabrications</a></li>
                 <li><a href="#about">À propos</a></li>
+                <li><a href="contact.html">Contact</a></li> <!-- Lien vers la page contact -->
             </ul>
         </nav>
     </header>
@@ -146,7 +164,6 @@
         <section id="accueil" class="hero">
             <h2>Transformez vos idées en réalité</h2>
             <p>Découvrez nos services d'impression 3D, découpe laser et électronique pour concrétiser tous vos projets.</p>
-            <a href="#services" class="cta-button">Explorez nos services</a>
         </section>
 
         <section id="services" class="services">
@@ -192,13 +209,14 @@
                 <div id="viewerDescription" class="description-bubble"></div>
             </div>
         </section>
-            <div class="ajout-container">
-        <section id="about">
-            <h2>À propos de nous</h2>
-            <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
-            <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
-        </section>
-            </div>
+        
+        <div class="ajout-container">
+            <section id="about">
+                <h2>À propos de nous</h2>
+                <p>Je m'appelle <span class="highlight">Arthur</span>, passionné par l'<span class="highlight">impression 3D</span> depuis plus de <span class="highlight">7 ans</span>. J'ai créé ce site pour proposer des services de <span class="highlight">fabrication numérique</span> sur mesure, accessibles à tous.</p>
+                <p>Mon objectif ? Offrir une alternative <span class="highlight">durable</span> et <span class="highlight">éco-responsable</span> en donnant une seconde vie aux pièces difficiles à trouver ou introuvables.</n> Grâce à l'<span class="highlight">impression 3D</span> et à la <span class="highlight">découpe laser</span>, je peux créer des objets <span class="highlight">personnalisés</span>, réparer des équipements et concrétiser vos idées.</p>
+            </section>
+        </div>
 
         <section>
             <h2>Avis</h2>
@@ -209,6 +227,9 @@
             </form>
             <div id="reviews"></div>
         </section>
+
+        <!-- Bouton "Contactez-nous" -->
+        <a href="contact.html" class="contact-button">Contactez-nous</a>
     </main>
 
     <footer>
