@@ -8,6 +8,21 @@
         <link rel="shortcut icon" href="logo.ico" />
     <link rel="stylesheet" href="contact.css">
     <script defer src="script.js"></script>
+    <script>
+        import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+const contactForm = document.getElementById("contactForm");
+const contactMessage = document.getElementById("contactMessage");
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        contactForm.style.display = "none";
+        contactMessage.innerHTML = '<p style="color:red;">Vous devez être connecté pour envoyer un message.</p>';
+    }
+});
+
+    </script>
 </head>
 <body>
     <header>
