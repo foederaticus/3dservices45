@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatrX3D</title>
+    <link rel="shortcut icon" href="../logo.ico" />
+    <link rel="stylesheet" href="../complet.css">
+    <script type="module">
+        // Importer les fonctions Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBozqQRLorjRC48nzn4UDLTmv3h34yhqXs",
+            authDomain: "avismatrx3d.firebaseapp.com",
+            databaseURL: "https://avismatrx3d-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "avismatrx3d",
+            storageBucket: "avismatrx3d.firebasestorage.app",
+            messagingSenderId: "616215343920",
+            appId: "1:616215343920:web:15646d086cd674f08a4ef5",
+            measurementId: "G-BTX2L716ME"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Soumettre un avis
+            document.getElementById('reviewForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('reviewerName').value;
+                const message = document.getElementById('reviewMessage').value;
+                
+                const reviewsRef = ref(db, 'reviews/' + Date.now());
+                set(reviewsRef, {
+                    name: name,
+                    message: message,
+                    timestamp: Date.now()
+                }).then(() => {
+                    alert('Avis soumis avec succès !');
+                    document.getElementById('reviewForm').reset();
+                    loadReviews();
+                });
+            });
+
+            // Charger les avis
+            function loadReviews() {
+                const reviewsRef = ref(db, 'reviews/');
+                onValue(reviewsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    const reviewsContainer = document.getElementById('reviews');
+                    reviewsContainer.innerHTML = ''; // Réinitialiser le conteneur
+                    for (const key in data) {
+                        const review = data[key];
+                        const reviewElement = document.createElement('div');
+                        reviewElement.innerHTML = `<strong>${review.name}</strong>: ${review.message}`;
+                        reviewsContainer.appendChild(reviewElement);
+                    }
+                });
+            }
+
+            // Charger les avis au chargement de la page
+            loadReviews();
+
+        });
+        
+    </script>
+    <style>
+        header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+}
+
+.btn-connexion {
+    background-color: orange;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+        .ajout-container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        .ajout-container h2 {
+            margin-top: 0;
+        }
+        .contact-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #e87b15;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+        .contact-button:hover {
+            background-color: darkorange; /* Couleur en survol */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <center>
+        <h1>Catégories</h1>
+            </center>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Accueil</a></li>
+                <li><a href="../index.html">Services</a></li>
+                <li><a href="../index.html">Fabrications</a></li>
+                <li><a href="categories.html">Produits</a></li>
+                <li><a href="../index.html">À propos</a></li>
+                <li><a href="../contact.html">Contact</a></li> <!-- Lien vers la page contact -->
+                <li><a href="../connexion.html" class="btn-connexion">Connexion / Inscription </a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="services" class="services">
+            <h2>Nos Services</h2>
+            <div class="service-container">
+                <a href="3D_product.html" style="display: flex; text-decoration: none;">
+                    <div class="service-box">
+                        <img src="../images/3d-printing.jpg" alt="Impression 3D">
+                        <h3>Impression 3D</h3>
+                        <p>Fabrication rapide et précise d’objets en 3D pour prototypage ou production.</p>
+                    </div>
+                </a>
+                <a href="Laser_products.html" style="display: flex; text-decoration: none;">
+                    <div class="service-box">
+                        <img src="../images/laser-cutting.jpg" alt="Découpe Laser">
+                        <h3>Découpe Laser</h3>
+                        <p>Découpe et gravure de matériaux variés avec une précision extrême.</p>
+                    </div>
+                </a>
+                <a href="Circuits.html" style="display: flex; text-decoration: none;">
+                    <div class="service-box">
+                        <img src="../images/electronics.jpg" alt="Électronique">
+                        <h3>Solutions Électroniques</h3>
+                        <p>Développement et intégration de circuits électroniques sur mesure.</p>
+                    </div>
+                </a>
+                <a href="3D_Plans.html" style="display: flex; text-decoration: none;">
+                    <div class="service-box">
+                        <img src="../images/3d-modeling.png" alt="Modélisation 3D">
+                        <h3>Modélisation 3D</h3>
+                        <p>Création de modèles 3D personnalisés pour impression, conception et visualisation.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section>
+            <h2>Avis</h2>
+            <form id="reviewForm">
+                <input type="text" id="reviewerName" placeholder="Votre nom" required>
+                <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
+                <button type="submit">Soumettre</button>
+            </form>
+            <div id="reviews"></div>
+        </section>
+
+        <!-- Bouton "Contactez-nous" -->
+        <a href="../contact.html" class="contact-button">Contactez-nous</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 MatrX3D - Tous droits réservés</p>
+    </footer>
+</body>
+</html>
