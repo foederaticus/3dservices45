@@ -13,15 +13,15 @@
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
 
         // Configuration Firebase
-       const firebaseConfig = {
-          apiKey: "AIzaSyB6yvT21n5NFiU6muwjnzMlKXLFwpuQmn0",
-          authDomain: "matrx3d.firebaseapp.com",
-          databaseURL: "https://matrx3d-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "matrx3d",
-          storageBucket: "matrx3d.firebasestorage.app",
-          messagingSenderId: "694446492703",
-          appId: "1:694446492703:web:392e6818d59b680f92592a",
-          measurementId: "G-MS96Q5NQTZ"
+        const firebaseConfig = {
+            apiKey: "AIzaSyBozqQRLorjRC48nzn4UDLTmv3h34yhqXs",
+            authDomain: "avismatrx3d.firebaseapp.com",
+            databaseURL: "https://avismatrx3d-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "avismatrx3d",
+            storageBucket: "avismatrx3d.firebasestorage.app",
+            messagingSenderId: "616215343920",
+            appId: "1:616215343920:web:15646d086cd674f08a4ef5",
+            measurementId: "G-BTX2L716ME"
         };
 
         // Initialiser Firebase
@@ -261,14 +261,14 @@ nav ul li a {
             </section>
         </div>
 
-        <section>
-            <h2>Avis</h2>
+        <section style="display: flex; position: relative; left: 0vh; background-color: orange; height: 30vh; width: 94%; border-radius: 2vh; border: 2px solid black; margin: 5vh; text-align: center; padding: 0;">
+            <h2 style="display: flex; position: relative; left: 50%; top: 0.5vh;">Avis</h2>
             <form id="reviewForm">
-                <input type="text" id="reviewerName" placeholder="Votre nom" required>
-                <textarea id="reviewMessage" placeholder="Votre avis" required></textarea>
-                <button type="submit">Soumettre</button>
+                <input type="text" id="reviewerName" placeholder="Votre nom" required style="display: flex; position: relative; left: 2vh; top: 8vh; width: 10vh; height: 2vh; border: 2px solid black; border-radius: 2vh;">
+                <textarea id="reviewMessage" placeholder="Votre avis (publique)" required style="display: flex; height: 12vh;position: relative; left: 2vh; top: 8vh; width: 20vh; margin-top: 1vh; border: 2px solid black; border-radius: 2vh;"></textarea>
+                <button type="submit" style="display: flex; position: relative; left: 2vh; top: 9vh; width: 20vh; text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Publier</button>
             </form>
-            <div id="reviews"></div>
+            <div id="reviews" style="display:block; position: relative; left: 30vh; width: 120vh; text-align: left; height: 18vh; top: 7vh; overflow-y: auto; border: solid 2px black; border-radius: 2vh; padding: 5px; background-color: white;"></div>
         </section>
 
         <!-- Bouton "Contactez-nous" -->
